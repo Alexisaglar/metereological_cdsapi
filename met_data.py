@@ -24,7 +24,5 @@ def retrieve_data(latitude, longitude, altitude, date_period, resolution, name):
             'format': 'csv',
         },
         f'{name}.csv')
-
     
-
-retrieve_data(latitude,longitude,altitude,date_period,resolution,"Newcastle_data_1_min_January")
+retrieve_data(latitude, longitude, altitude, date_period, resolution, "Newcastle_data_1_min_January")
