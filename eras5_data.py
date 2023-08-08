@@ -4,11 +4,11 @@ c.retrieve(
     'reanalysis-era5-land',
     {
         'variable': '2m_temperature',
-        'year': '1950',
+        'year': '2023',
         'month': '01',
         'area':[
-            52,-19,-90,
-            90,
+            -1.62,54.9,-1.58,
+            54.98,
         ],
         'day': [
             '01', '02', '03',
@@ -35,4 +35,4 @@ c.retrieve(
         ],
         'format': 'grib',
     },
-    'download.grib')
+    'newcastle.grib')
