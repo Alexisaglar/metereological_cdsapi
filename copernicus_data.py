@@ -1,11 +1,16 @@
 import json
 import cdsapi
+import xarray as xr
+import pandas as pd
+import datetime
+
+kelvin_temperature = 273.15
 
 #variables for position and resolution of data
 latitude = "56"
 longitude = "-1.6"
 altitude = "-999." #default as mentioned in lib
-date_period = '2023-01-01/2023-01-02'
+date_period = '2023-01-01/2023-01-31'
 resolution = "1minute"
 
 def get_database_info(database):
@@ -13,7 +18,6 @@ def get_database_info(database):
         config = json.load(config_file)
         return config.get(database, None)
 
-# Example usage
 database_irradiation, database_temperature = "irradiation", "temperature"
 db_irradiation_info, db_temperature_info = get_database_info(database_irradiation), get_database_info(database_temperature)
 
@@ -25,7 +29,7 @@ c.retrieve(
     'reanalysis-era5-land',
     {
         'variable': '2m_temperature',
-        'year': '2022',
+        'year': '2023',
         'month': '01',
         'day': [
             '01', '02', '03',
@@ -74,3 +78,34 @@ c.retrieve(
             'format': 'csv',
         },
         'irradiation.csv'),
+
+#Clean temperature data ready to process 
+# Load xarray dataset from a file
+file_path = 'temperature.grib'
+xarray_dataset = xr.open_dataset(file_path)
+# Convert xarray dataset to pandas DataFrame
+df = xarray_dataset.to_dataframe()
+df = df.set_index(df['valid_time'])
+df = df['t2m'] - kelvin_temperature
+df = df.resample('T').interpolate()
+if "/" in date_period:
+    range_days = date_period.split('/')
+    mask = (df.index >= range_days[0]) & (df.index <= range_days[1])
+    df.loc[mask].to_csv("temperature.csv")
+
+else:
+    df.loc[date_period].to_csv("temperature.csv")
+
+#Clean data from irradiation ready to process
+with open('irradiation.csv', newline='') as weather_data:
+    irradiance = pd.read_csv(weather_data, skiprows=42, delimiter=';')
+    irradiance.rename(columns={irradiance.columns[0]: irradiance.columns[0].lstrip('# ')}, inplace=True)
+    irradiance['index_date'] = irradiance['Observation period'].apply(lambda x: x.split('/')[0])
+    irradiance['index_date'] = pd.to_datetime(irradiance['index_date'])
+    irradiance.set_index(irradiance['index_date'], inplace=True)
+    irradiance = irradiance[['DHI', 'GHI']]
+
+irradiance.to_csv('irradiance.csv')
+
+
+print(irradiance)
