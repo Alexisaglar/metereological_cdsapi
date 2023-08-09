@@ -1,2 +1,3 @@
 *.grib
 *.csv
+config.json

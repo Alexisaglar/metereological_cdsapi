@@ -4,12 +4,8 @@ c.retrieve(
     'reanalysis-era5-land',
     {
         'variable': '2m_temperature',
-        'year': '2023',
+        'year': '2022',
         'month': '01',
-        'area':[
-            -1.62,54.9,-1.58,
-            54.98,
-        ],
         'day': [
             '01', '02', '03',
             '04', '05', '06',
@@ -33,6 +29,10 @@ c.retrieve(
             '18:00', '19:00', '20:00',
             '21:00', '22:00', '23:00',
         ],
+        'area': [
+            54.98, -1.62, 54.96,
+            -1.58,
+        ],
         'format': 'grib',
     },
-    'newcastle.grib')
+    'download.grib')
