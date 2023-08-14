@@ -103,9 +103,6 @@ with open('irradiation.csv', newline='') as weather_data:
     irradiance['index_date'] = irradiance['Observation period'].apply(lambda x: x.split('/')[0])
     irradiance['index_date'] = pd.to_datetime(irradiance['index_date'])
     irradiance.set_index(irradiance['index_date'], inplace=True)
-    irradiance = irradiance[['DHI', 'GHI']]
+    irradiance = irradiance[['DHI', 'GHI']]*60
 
 irradiance.to_csv('irradiance.csv')
-
-
-print(irradiance)
